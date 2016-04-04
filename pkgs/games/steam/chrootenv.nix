@@ -22,6 +22,8 @@ buildFHSUserEnv {
       which
       # Needed by gdialog, including in the steam-runtime
       perl
+      #fix libGL.so.1 errors
+      mesa
     ]
     ++ lib.optional withJava jdk
     ++ lib.optional withPrimus primus
