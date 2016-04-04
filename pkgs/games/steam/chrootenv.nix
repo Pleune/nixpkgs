@@ -22,8 +22,6 @@ buildFHSUserEnv {
       which
       # Needed by gdialog, including in the steam-runtime
       perl
-      #fix libGL.so.1 errors
-      mesa
     ]
     ++ lib.optional withJava jdk
     ++ lib.optional withPrimus primus
@@ -42,6 +40,9 @@ buildFHSUserEnv {
       gst_all_1.gstreamer
       gst_all_1.gst-plugins-ugly
       libdrm
+      zlib
+      libuuid
+      openal
 
       (steamPackages.steam-runtime-wrapped.override {
         inherit nativeOnly runtimeOnly newStdcpp;
@@ -64,6 +65,7 @@ buildFHSUserEnv {
 
   profile = ''
     export STEAM_RUNTIME=/steamrt
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib
   '';
 
   runScript = "steam";
