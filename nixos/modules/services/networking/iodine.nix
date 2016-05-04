@@ -106,7 +106,9 @@ in
       createIodineClientService = name: cfg:
       {
         description = "iodine client - ${name}";
-        wantedBy = [ "ip-up.target" ];
+        wantedBy = [ "multi-user.target" ];
+        wants = [ "network-online.target" ];
+        after = [ "network-online.target" ];
         serviceConfig = {
           RestartSec = "30s";
           Restart = "always";
@@ -121,7 +123,9 @@ in
     ) // {
       iodined = mkIf (cfg.server.enable) {
         description = "iodine, ip over dns server daemon";
-        wantedBy = [ "ip-up.target" ];
+        wantedBy = [ "multi-user.target" ];
+        wants = [ "network-online.target" ];
+        after = [ "network-online.target" ];
         serviceConfig.ExecStart = "${pkgs.iodine}/bin/iodined -f -u ${iodinedUser} ${cfg.server.extraConfig} ${cfg.server.ip} ${cfg.server.domain}";
       };
     };
