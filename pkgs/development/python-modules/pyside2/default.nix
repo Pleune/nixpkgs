@@ -13,16 +13,40 @@
 }:
 stdenv.mkDerivation rec {
   pname = "pyside2";
-  version = "5.15.11";
+  version = "5.15.14";
 
   src = fetchurl {
-    url = "https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${version}-src/pyside-setup-opensource-src-${version}.tar.xz";
-    sha256 = "sha256-2lZ807eFTSegtK/j6J3osvmLem1XOTvlbx/BP3cPryk=";
+    url = "https://mirrors.ukfast.co.uk/sites/qt.io/official_releases/QtForPython/pyside2/PySide2-${version}-src/pyside-setup-opensource-src-${version}.tar.xz";
+    sha256 = "sha256-MmURlPamt7zkLwTmixQBrSCH5HiaTI8/uGSehhicY3I=";
   };
 
-  patches = [ ./dont_ignore_optional_modules.patch ];
+  patches = [
+    ./nix_compile_cflags.patch
+    ./Final-details-to-enable-3.12-wheel-compatibility.patch
+    ./Python-3.12-Fix-the-structure-of-class-property.patch
+    ./Support-running-PySide-on-Python-3.12.patch
+    ./shiboken2-clang-Fix-and-simplify-resolveType-helper.patch
+    ./shiboken2-clang-Fix-build-with-clang-16.patch
+    ./shiboken2-clang-Fix-clashes-between-type-name-and-enumera.patch
+    ./shiboken2-clang-Record-scope-resolution-of-arguments-func.patch
+    ./shiboken2-clang-Remove-typedef-expansion.patch
+    ./shiboken2-clang-Suppress-class-scope-look-up-for-paramete.patch
+    ./shiboken2-clang-Write-scope-resolution-for-all-parameters.patch
+    ./dont_ignore_optional_modules.patch
+    ./Modify-sendCommand-signatures.patch
+  ];
 
   postPatch = ''
+    substituteInPlace \
+      ez_setup.py \
+      build_scripts/*.py \
+      sources/shiboken2/CMakeLists.txt \
+      sources/pyside2/CMakeLists.txt \
+      sources/shiboken2/data/shiboken_helpers.cmake \
+      sources/pyside2-tools/CMakeLists.txt \
+      sources/shiboken2/tests/samplebinding/numpy_test.py \
+      --replace "from distutils" "import setuptools; from distutils" \
+      --replace "import distutils" "import setuptools; import distutils"
     cd sources/pyside2
   '';
 
@@ -38,6 +62,7 @@ stdenv.mkDerivation rec {
     ninja
     qt5.qmake
     python
+    python.pkgs.setuptools
   ];
 
   buildInputs =

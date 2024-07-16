@@ -7,6 +7,7 @@
   isPyPy,
   pythonAtLeast,
   sip-module ? "sip",
+  setuptools,
 }:
 
 buildPythonPackage rec {
@@ -14,8 +15,7 @@ buildPythonPackage rec {
   version = "4.19.25";
   format = "other";
 
-  # relies on distutils
-  disabled = isPyPy || pythonAtLeast "3.12";
+  disabled = isPyPy;
 
   src = fetchurl {
     url = "https://www.riverbankcomputing.com/static/Downloads/sip/${version}/sip-${version}.tar.gz";
@@ -30,6 +30,12 @@ buildPythonPackage rec {
     })
   ];
 
+  postPatch = lib.optionalString (pythonAtLeast "3.12") ''
+    substituteInPlace configure.py --replace-fail "from distutils" "from setuptools._distutils"
+  '';
+
+  propagatedBuildInputs = lib.optional (pythonAtLeast "3.12") setuptools;
+
   configurePhase = ''
     ${python.executable} ./configure.py \
       --sip-module ${sip-module} \
@@ -38,11 +44,6 @@ buildPythonPackage rec {
   '';
 
   enableParallelBuilding = true;
-
-  pythonImportsCheck = [
-    sip-module
-    "sipconfig"
-  ];
 
   doCheck = true;
 

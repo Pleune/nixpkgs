@@ -7,28 +7,37 @@
   qt5,
   libxcrypt,
   llvmPackages_15,
-  pythonAtLeast,
 }:
 
 stdenv.mkDerivation {
   pname = "shiboken2";
 
-  inherit (pyside2) version src;
-
-  patches = [ ./nix_compile_cflags.patch ];
+  inherit (pyside2) version src patches;
 
   postPatch = ''
+    substituteInPlace \
+      ez_setup.py \
+      build_scripts/*.py \
+      sources/shiboken2/CMakeLists.txt \
+      sources/pyside2/CMakeLists.txt \
+      sources/shiboken2/data/shiboken_helpers.cmake \
+      sources/pyside2-tools/CMakeLists.txt \
+      sources/shiboken2/tests/samplebinding/numpy_test.py \
+      --replace "from distutils" "import setuptools; from distutils" \
+      --replace "import distutils" "import setuptools; import distutils"
     cd sources/shiboken2
   '';
 
   CLANG_INSTALL_DIR = llvmPackages_15.libclang.out;
 
-  nativeBuildInputs = [ cmake ];
+  nativeBuildInputs = [
+    cmake
+    (python.withPackages (ps: with ps; [ setuptools ]))
+  ];
 
   buildInputs =
     [
       llvmPackages_15.libclang
-      python
       python.pkgs.setuptools
       qt5.qtbase
       qt5.qtxmlpatterns
@@ -59,6 +68,5 @@ stdenv.mkDerivation {
     ];
     homepage = "https://wiki.qt.io/Qt_for_Python";
     maintainers = with maintainers; [ gebner ];
-    broken = pythonAtLeast "3.12";
   };
 }
