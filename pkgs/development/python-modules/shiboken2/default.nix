@@ -23,8 +23,8 @@ stdenv.mkDerivation {
       sources/shiboken2/data/shiboken_helpers.cmake \
       sources/pyside2-tools/CMakeLists.txt \
       sources/shiboken2/tests/samplebinding/numpy_test.py \
-      --replace "from distutils" "import setuptools; from distutils" \
-      --replace "import distutils" "import setuptools; import distutils"
+      --replace-fail "from distutils" "import setuptools; from distutils" \
+      --replace-fail "import distutils" "import setuptools; import distutils"
     cd sources/shiboken2
   '';
 

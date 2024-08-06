@@ -16,8 +16,8 @@ stdenv.mkDerivation rec {
   version = "5.15.14";
 
   src = fetchurl {
-    url = "https://mirrors.ukfast.co.uk/sites/qt.io/official_releases/QtForPython/pyside2/PySide2-${version}-src/pyside-setup-opensource-src-${version}.tar.xz";
-    sha256 = "sha256-MmURlPamt7zkLwTmixQBrSCH5HiaTI8/uGSehhicY3I=";
+    url = "https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${version}-src/pyside-setup-opensource-src-${version}.tar.xz";
+    hash = "sha256-MmURlPamt7zkLwTmixQBrSCH5HiaTI8/uGSehhicY3I=";
   };
 
   patches = [
@@ -45,8 +45,8 @@ stdenv.mkDerivation rec {
       sources/shiboken2/data/shiboken_helpers.cmake \
       sources/pyside2-tools/CMakeLists.txt \
       sources/shiboken2/tests/samplebinding/numpy_test.py \
-      --replace "from distutils" "import setuptools; from distutils" \
-      --replace "import distutils" "import setuptools; import distutils"
+      --replace-fail "from distutils" "import setuptools; from distutils" \
+      --replace-fail "import distutils" "import setuptools; import distutils"
     cd sources/pyside2
   '';
 

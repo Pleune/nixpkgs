@@ -8,6 +8,7 @@
   pythonAtLeast,
   sip-module ? "sip",
   setuptools,
+  unittestCheckHook,
 }:
 
 buildPythonPackage rec {
@@ -44,6 +45,13 @@ buildPythonPackage rec {
   '';
 
   enableParallelBuilding = true;
+
+  pythonImportsCheck = [
+    (lib.optional (lib.pythonOlder "3.12") sip-module)
+    "sipconfig"
+  ];
+
+  nativeCheckInputs = [ unittestCheckHook ];
 
   doCheck = true;
 
