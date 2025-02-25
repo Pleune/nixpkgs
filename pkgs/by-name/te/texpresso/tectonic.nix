@@ -2,21 +2,29 @@
   tectonic-unwrapped,
   fetchFromGitHub,
   rustPlatform,
+  lib
 }:
 
 tectonic-unwrapped.overrideAttrs (
   finalAttrs: prevAttrs: {
     pname = "texpresso-tonic";
-    version = "0.15.0-unstable-2024-04-19";
+    version = "0.15.0-unstable-2025-02-25";
     src = fetchFromGitHub {
       owner = "let-def";
       repo = "tectonic";
-      rev = "b38cb3b2529bba947d520ac29fbb7873409bd270";
-      hash = "sha256-ap7fEPHsASAphIQkjcvk1CC7egTdxaUh7IpSS5os4W8=";
+      rev = "c2ae25ff1facd9e9cce31b48944b867773f709ec";
+      hash = "sha256-sew9r+M5CGACDaeSnAWcqE6RDED2o/YlY0m2BbEEZxc=";
       fetchSubmodules = true;
     };
+
+    # patch "1155-fix-endless-reruns-when-generating-bbl" is now upstreamed
+    patches = null;
+
+    # patch "1202-fix-build-with-rust-1_80" is now upstreamed
+    cargoPatches = null;
+
     useFetchCargoVendor = true;
-    cargoHash = "sha256-mqhbIv5r/5EDRDfP2BymXv9se2NCKxzRGqNqwqbD9A0=";
+    cargoHash = "sha256-dBthzRS+9wqKCwmo5cY/ynTdfIPK3QCsbZ2vAQ8q7aM=";
     # rebuild cargoDeps by hand because `.overrideAttrs cargoHash`
     # does not reconstruct cargoDeps (a known limitation):
     cargoDeps = rustPlatform.fetchCargoVendor {
